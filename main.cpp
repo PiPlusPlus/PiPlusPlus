@@ -1,4 +1,4 @@
-// version: 0.0.5.12 alpha
+// version: 0.0.5.13 alpha
 /*
 运行前请在同一目录下创建hello-world.ppp（没打错，就是ppp），内容如下：
 WRT 00000000 48
@@ -32,6 +32,8 @@ END
 按照预期应该输出“Hello, world!”，已经单独测试成功。
 现在的问题是打不开文件（macos），windows没问题，linux没测试过
 */
+#include "testlib.h"
+
 #ifndef _GLIBCXX_NO_ASSERT
 #include <cassert>
 #endif
@@ -131,10 +133,12 @@ CONST_PPP_TEST_VER=1;
 const int
 CONST_MEN_SIZE_MAX=67108864,
 CONST_GOTO_POINT_MAX=67108864,
-CONST_PPP_VER=12;
+CONST_PPP_VER=13;
 
 const string
-CONST_PPP_VER_F="0.0.5.12 alpha";
+CONST_PPP_VER_F="0.0.5.13 alpha";
+
+string ___ans;
 
 int ttt;
 
@@ -156,8 +160,7 @@ int ptr;
 vector<string>cmdstrs;
 
 void reterr(string ctr,string tip){
-    cout<<"["<<ctr<<"]"<<tip;
-    exit(0);
+    quitf(_wa, "Exitted with error");
 }
 
 void check_file_open_error(bool suc){
@@ -206,9 +209,6 @@ void check_div_zero_m(bool suc){
     if(!suc)reterr("prunner","取余除数为零");
 }
 
-void t(string code){
-    cmdstrs.push_back(code);
-}
 void wrt(int p1,char p2){
     mem[p1]=p2;
     check_mem_size();
@@ -276,13 +276,11 @@ void rmv(int p1,int p2,int p3){
     check_mem_size();
 }
 void ipt(int p1){
-    check_mem_search_error(p1);
-    mem[p1]=getchar();
-    check_mem_size();
+    mem[p1]=0;
 }
 void prt(int p1){
     check_mem_search_error(p1);
-    putchar(mem[p1]);
+    ___ans+=mem[p1];
 }
 void cls(){
     for(int i=0;i<24;i++)putchar('\n');
@@ -341,6 +339,10 @@ void del(int p1){
 void end(int&_ptr){
     mem.clear();
     _ptr=-1;
+    char __tans[65536];
+    for(int i=0;i<___ans.length();i++)__tans[i]=___ans[i];
+    if(___ans=="Hello, world!")quitf(_ok, "The answer is correct. answer is %s", "Hello, world!");
+    else quitf(_wa, "The answer is wrong: expected = %s, found = %s", "Hello, world!", __tans);
 }
 /*
 void rnd(int p1){
@@ -401,7 +403,7 @@ void tmo(int p1,这里有一堆记得改){
 }
 */
 char h2d2(string hex){
-    char ret;
+    char ret=0;
     for(int i=0;i<2;i++){
         ret<<=4;
         ret|='0'<=hex[i]&&hex[i]<='9'?hex[i]-'0':hex[i]+10-'A';
@@ -409,7 +411,7 @@ char h2d2(string hex){
     return ret;
 }
 int h2d8(string hex){
-    int ret;
+    int ret=0;
     for(int i=0;i<8;i++){
         ret<<=4;
         ret|='0'<=hex[i]&&hex[i]<='9'?hex[i]-'0':hex[i]+10-'A';
@@ -417,11 +419,11 @@ int h2d8(string hex){
     return ret;
 }
 void rdfl(){
-    string fn;
-    char _fn[65536];
-    getline(cin,fn);
-    for(int i=0;i<fn.length();i++)_fn[i]=fn[i];
-    ifstream fin(_fn);
+    // string fn;
+    // char _fn[65536];
+    // getline(cin,fn);
+    // for(int i=0;i<fn.length();i++)_fn[i]=fn[i];
+    // ifstream fin(_fn);
     // istream fin;
     // freopen("hello-world.ppp","r",fin);
     // stringstream fin;
@@ -431,95 +433,95 @@ void rdfl(){
     // fin>>lcnt;
     // lcnt=cmdstrs.size();
     // fin.open();
-    if(fin.is_open()){
-        while(!fin.eof()){
+    // if(fin.is_open()){
+        while(!ouf.eof()){
         // while(lcnt--){
-            fin>>typ;
+            typ=ouf.readToken();
             if(typ=="WRT"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_2(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_2(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="ADD"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="SUB"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="MUL"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="DIV"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="MOD"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="AND"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="NOR"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="XOR"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="LMV"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="RMV"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="IPT"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="PRT"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="CLS"){
                 cmdo ct;
@@ -528,62 +530,62 @@ void rdfl(){
             }else if(typ=="SPT"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="GTO"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="CMP"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="RMM"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="WMM"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="CPY"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="GTW"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="IFG"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="DEL"){
                 cmdo ct;
                 ct.fnc=typ;
-                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                tmp=ouf.readToken();check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
             }else if(typ=="END"){
                 cmdo ct;
@@ -593,9 +595,9 @@ void rdfl(){
                 check_para_align_error_f(0);
             }
         }
-    }else{
-        check_file_open_error(0);
-    }
+    // }else{
+    //     check_file_open_error(0);
+    // }
 }
 void mkcl(){
     for(int i=0;i<cmdtmp.size();i++){
@@ -886,38 +888,8 @@ void do_prog(){
         }
     }while(~ptr);
 }
-void wtcode(){
-    t("WRT 00000000 48");
-    t("WRT 00000001");
-    t("WRT 00000002 6C");
-    t("WRT 00000003 6C");
-    t("WRT 00000004 6F");
-    t("WRT 00000005 2C");
-    t("WRT 00000006 20");
-    t("WRT 00000007 77");
-    t("WRT 00000008 6F");
-    t("WRT 00000009 72");
-    t("WRT 0000000A 6C");
-    t("WRT 0000000B 64");
-    t("WRT 0000000C 21");
-    t("PRT 00000000");
-    t("PRT 00000001");
-    t("PRT 00000002");
-    t("PRT 00000003");
-    t("PRT 00000004");
-    t("PRT 00000005");
-    t("PRT 00000006");
-    t("PRT 00000007");
-    t("PRT 00000008");
-    t("PRT 00000009");
-    t("PRT 0000000A");
-    t("PRT 0000000B");
-    t("PRT 0000000C");
-    t("END");
-}
-int main(){
-    cout<<"Pi++ Interpreter (ver: "+CONST_PPP_VER_F+")\nRelative path of Pi++ program (End with <ENTER>): ";
-    // wtcode();
+int main(int argc, char* argv[]){
+    registerTestlibCmd(argc, argv);
     rdfl();
     mkcl();
     do_prog();

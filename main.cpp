@@ -909,6 +909,7 @@ void do_prog(){
             ptr++;
         }else if(cmdfnl[ptr].fnc=="DLW"){
             dlw(cmdfnl[ptr].plst[0],cmdfnl[ptr].plst[1],cmdfnl[ptr].plst[2],cmdfnl[ptr].plst[3]);
+            ptr++;
         }else if(cmdfnl[ptr].fnc=="END"){
             end(ptr);
         }else{

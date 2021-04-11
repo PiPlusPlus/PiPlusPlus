@@ -1,4 +1,4 @@
-// version: 0.0.5.13 alpha
+// version: 0.0.5.14 alpha
 /*
 运行前请在同一目录下创建hello-world.ppp（没打错，就是ppp），内容如下：
 WRT 00000000 48
@@ -131,10 +131,10 @@ CONST_PPP_TEST_VER=1;
 const int
 CONST_MEN_SIZE_MAX=67108864,
 CONST_GOTO_POINT_MAX=67108864,
-CONST_PPP_VER=13;
+CONST_PPP_VER=14;
 
 const string
-CONST_PPP_VER_F="0.0.5.13 alpha";
+CONST_PPP_VER_F="0.0.5.14 alpha";
 
 int ttt;
 
@@ -337,6 +337,14 @@ void ifg(int p1,int p2,int&_ptr){
 void del(int p1){
     check_mem_search_error(p1);
     mem.erase(p1);
+}
+void dlw(int p1,int p2,int p3,int p4){
+    check_mem_search_error(p1);
+    check_mem_search_error(p2);
+    check_mem_search_error(p3);
+    check_mem_search_error(p4);
+    check_mem_search_error((int)mem[p1]|((int)mem[p2]<<8)|((int)mem[p3]<<16)|((int)mem[p4]<<24));
+    mem.erase((int)mem[p1]|((int)mem[p2]<<8)|((int)mem[p3]<<16)|((int)mem[p4]<<24));
 }
 void end(int&_ptr){
     mem.clear();
@@ -585,6 +593,14 @@ void rdfl(){
                 ct.fnc=typ;
                 fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
                 cmdtmp.push_back(ct);
+            }else if(typ=="DLW"){
+                cmdo ct;
+                ct.fnc=typ;
+                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                fin>>tmp;check_length_8(tmp);ct.plst.push_back(tmp);
+                cmdtmp.push_back(ct);
             }else if(typ=="END"){
                 cmdo ct;
                 ct.fnc=typ;
@@ -804,6 +820,18 @@ void mkcl(){
             ct.fnc=cmdtmp[i].fnc;
             ct.plst.push_back(_p1);
             cmdfnl.push_back(ct);
+        }else if(cmdtmp[i].fnc=="DLW"){
+            int _p1=h2d8(cmdtmp[i].plst[0]);
+            int _p2=h2d8(cmdtmp[i].plst[1]);
+            int _p3=h2d8(cmdtmp[i].plst[2]);
+            int _p4=h2d8(cmdtmp[i].plst[3]);
+            cmd ct;
+            ct.fnc=cmdtmp[i].fnc;
+            ct.plst.push_back(_p1);
+            ct.plst.push_back(_p2);
+            ct.plst.push_back(_p3);
+            ct.plst.push_back(_p4);
+            cmdfnl.push_back(ct);
         }else if(cmdtmp[i].fnc=="END"){
             cmd ct;
             ct.fnc=cmdtmp[i].fnc;
@@ -879,6 +907,8 @@ void do_prog(){
         }else if(cmdfnl[ptr].fnc=="DEL"){
             del(cmdfnl[ptr].plst[0]);
             ptr++;
+        }else if(cmdfnl[ptr].fnc=="DLW"){
+            dlw(cmdfnl[ptr].plst[0],cmdfnl[ptr].plst[1],cmdfnl[ptr].plst[2],cmdfnl[ptr].plst[3]);
         }else if(cmdfnl[ptr].fnc=="END"){
             end(ptr);
         }else{

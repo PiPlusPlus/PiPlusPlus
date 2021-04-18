@@ -1,4 +1,4 @@
-// version: 0.0.5.14 alpha
+// version: 0.0.6.16 alpha
 /*
 运行前请在同一目录下创建hello-world.ppp（没打错，就是ppp），内容如下：
 WRT 00000000 48
@@ -58,7 +58,7 @@ END
 #include <cstdbool>
 #include <cstdint>
 #include <ctgmath>
-#include <cwchar>
+#include <cwunsigned char>
 #include <cwctype>
 #endif
 
@@ -131,14 +131,12 @@ CONST_PPP_TEST_VER=1;
 const int
 CONST_MEN_SIZE_MAX=67108864,
 CONST_GOTO_POINT_MAX=67108864,
-CONST_PPP_VER=14;
+CONST_PPP_VER=16;
 
 const string
-CONST_PPP_VER_F="0.0.5.14 alpha";
+CONST_PPP_VER_F="0.0.6.16 alpha";
 
-int ttt;
-
-map<int,char>mem;
+map<int,unsigned char>mem;
 map<int,int>goto_point;
 
 struct cmdo{
@@ -182,7 +180,7 @@ void check_cmd_unknow(bool suc){
     if(!suc)reterr("clmaker","指令解释失败");
 }
 void check_ptr_error(){
-    if(ptr<0||ptr>=(int)cmdfnl.size())reterr("prunner","指令指针溢出");
+    if(ptr<0||ptr>=(unsigned)cmdfnl.size())reterr("prunner","指令指针溢出");
 }
 void check_goto_point_repeat(int p){
     if(goto_point.count(p))reterr("clmaker","锚点命名重合");
@@ -205,11 +203,14 @@ void check_div_zero_d(bool suc){
 void check_div_zero_m(bool suc){
     if(!suc)reterr("prunner","取余除数为零");
 }
+void check_argc_gt_2(bool suc){
+    if(!suc)reterr("freader","主体参数溢出");
+}
 
 void t(string code){
     cmdstrs.push_back(code);
 }
-void wrt(int p1,char p2){
+void wrt(int p1,unsigned char p2){
     mem[p1]=p2;
     check_mem_size();
 }
@@ -276,7 +277,6 @@ void rmv(int p1,int p2,int p3){
     check_mem_size();
 }
 void ipt(int p1){
-    check_mem_search_error(p1);
     mem[p1]=getchar();
     check_mem_size();
 }
@@ -302,8 +302,8 @@ void rmm(int p1,int p2,int p3,int p4,int p5){
     check_mem_search_error(p3);
     check_mem_search_error(p4);
     check_mem_search_error(p5);
-    check_mem_search_error((int)mem[p2]|((int)mem[p3]<<8)|((int)mem[p4]<<16)|((int)mem[p5]<<24));
-    mem[p1]=mem[(int)mem[p2]|((int)mem[p3]<<8)|((int)mem[p4]<<16)|((int)mem[p5]<<24)];
+    check_mem_search_error((unsigned)mem[p2]|((unsigned)mem[p3]<<8)|((unsigned)mem[p4]<<16)|((unsigned)mem[p5]<<24));
+    mem[p1]=mem[(unsigned)mem[p2]|((unsigned)mem[p3]<<8)|((unsigned)mem[p4]<<16)|((unsigned)mem[p5]<<24)];
     check_mem_size();
 }
 void wmm(int p1,int p2,int p3,int p4,int p5){
@@ -312,7 +312,7 @@ void wmm(int p1,int p2,int p3,int p4,int p5){
     check_mem_search_error(p3);
     check_mem_search_error(p4);
     check_mem_search_error(p5);
-    mem[(int)mem[p1]|((int)mem[p2]<<8)|((int)mem[p3]<<16)|((int)mem[p4]<<24)]=mem[p5];
+    mem[(unsigned)mem[p1]|((unsigned)mem[p2]<<8)|((unsigned)mem[p3]<<16)|((unsigned)mem[p4]<<24)]=mem[p5];
     check_mem_size();
 }
 void cpy(int p1,int p2){
@@ -325,8 +325,8 @@ void gtw(int p1,int p2,int p3,int p4,int&_ptr){
     check_mem_search_error(p2);
     check_mem_search_error(p3);
     check_mem_search_error(p4);
-    check_goto_point_error((int)mem[p1]|((int)mem[p2]<<8)|((int)mem[p3]<<16)|((int)mem[p4]<<24));
-    _ptr=goto_point[(int)mem[p1]|((int)mem[p2]<<8)|((int)mem[p3]<<16)|((int)mem[p4]<<24)];
+    check_goto_point_error((unsigned)mem[p1]|((unsigned)mem[p2]<<8)|((unsigned)mem[p3]<<16)|((unsigned)mem[p4]<<24));
+    _ptr=goto_point[(unsigned)mem[p1]|((unsigned)mem[p2]<<8)|((unsigned)mem[p3]<<16)|((unsigned)mem[p4]<<24)];
 }
 void ifg(int p1,int p2,int&_ptr){
     check_mem_search_error(p1);
@@ -343,8 +343,8 @@ void dlw(int p1,int p2,int p3,int p4){
     check_mem_search_error(p2);
     check_mem_search_error(p3);
     check_mem_search_error(p4);
-    check_mem_search_error((int)mem[p1]|((int)mem[p2]<<8)|((int)mem[p3]<<16)|((int)mem[p4]<<24));
-    mem.erase((int)mem[p1]|((int)mem[p2]<<8)|((int)mem[p3]<<16)|((int)mem[p4]<<24));
+    check_mem_search_error((unsigned)mem[p1]|((unsigned)mem[p2]<<8)|((unsigned)mem[p3]<<16)|((unsigned)mem[p4]<<24));
+    mem.erase((unsigned)mem[p1]|((unsigned)mem[p2]<<8)|((unsigned)mem[p3]<<16)|((unsigned)mem[p4]<<24));
 }
 void end(int&_ptr){
     mem.clear();
@@ -408,8 +408,8 @@ void tmo(int p1,这里有一堆记得改){
     //时间
 }
 */
-char h2d2(string hex){
-    char ret=0;
+unsigned char h2d2(string hex){
+    unsigned char ret=0;
     for(int i=0;i<2;i++){
         ret<<=4;
         ret|='0'<=hex[i]&&hex[i]<='9'?hex[i]-'0':hex[i]+10-'A';
@@ -424,10 +424,8 @@ int h2d8(string hex){
     }
     return ret;
 }
-void rdfl(){
-    string fn;
+void rdfl(string fn){
     char _fn[65536];
-    getline(cin,fn);
     for(int i=0;i<fn.length();i++)_fn[i]=fn[i];
     ifstream fin(_fn);
     // istream fin;
@@ -617,7 +615,7 @@ void mkcl(){
     for(int i=0;i<cmdtmp.size();i++){
         if(cmdtmp[i].fnc=="WRT"){
             int _p1=h2d8(cmdtmp[i].plst[0]);
-            char _p2=h2d2(cmdtmp[i].plst[1]);
+            unsigned char _p2=h2d2(cmdtmp[i].plst[1]);
             cmd ct;
             ct.fnc=cmdtmp[i].fnc;
             ct.plst.push_back(_p1);
@@ -656,7 +654,7 @@ void mkcl(){
         }else if(cmdtmp[i].fnc=="DIV"){
             int _p1=h2d8(cmdtmp[i].plst[0]);
             int _p2=h2d8(cmdtmp[i].plst[1]);
-            int _p3=h2d8(cmdtmp[i].plst[1]);
+            int _p3=h2d8(cmdtmp[i].plst[2]);
             cmd ct;
             ct.fnc=cmdtmp[i].fnc;
             ct.plst.push_back(_p1);
@@ -846,7 +844,7 @@ void do_prog(){
     do{
         check_ptr_error();
         if(cmdfnl[ptr].fnc=="WRT"){
-            wrt(cmdfnl[ptr].plst[0],(char)cmdfnl[ptr].plst[1]);
+            wrt(cmdfnl[ptr].plst[0],(unsigned char)cmdfnl[ptr].plst[1]);
             ptr++;
         }else if(cmdfnl[ptr].fnc=="ADD"){
             add(cmdfnl[ptr].plst[0],cmdfnl[ptr].plst[1],cmdfnl[ptr].plst[2]);
@@ -880,6 +878,7 @@ void do_prog(){
             ptr++;
         }else if(cmdfnl[ptr].fnc=="IPT"){
             ipt(cmdfnl[ptr].plst[0]);
+            ptr++;
         }else if(cmdfnl[ptr].fnc=="PRT"){
             prt(cmdfnl[ptr].plst[0]);
             ptr++;
@@ -917,39 +916,12 @@ void do_prog(){
         }
     }while(~ptr);
 }
-void wtcode(){
-    t("WRT 00000000 48");
-    t("WRT 00000001");
-    t("WRT 00000002 6C");
-    t("WRT 00000003 6C");
-    t("WRT 00000004 6F");
-    t("WRT 00000005 2C");
-    t("WRT 00000006 20");
-    t("WRT 00000007 77");
-    t("WRT 00000008 6F");
-    t("WRT 00000009 72");
-    t("WRT 0000000A 6C");
-    t("WRT 0000000B 64");
-    t("WRT 0000000C 21");
-    t("PRT 00000000");
-    t("PRT 00000001");
-    t("PRT 00000002");
-    t("PRT 00000003");
-    t("PRT 00000004");
-    t("PRT 00000005");
-    t("PRT 00000006");
-    t("PRT 00000007");
-    t("PRT 00000008");
-    t("PRT 00000009");
-    t("PRT 0000000A");
-    t("PRT 0000000B");
-    t("PRT 0000000C");
-    t("END");
-}
-int main(){
-    cout<<"Pi++ Interpreter (ver: "+CONST_PPP_VER_F+")\nRelative path of Pi++ program (End with <ENTER>): ";
-    // wtcode();
-    rdfl();
+int main(int argc,char *argv[]){
+    string fn;
+    if(argc<=1){cout<<"Pi++ Interpreter (ver: "+CONST_PPP_VER_F+")\nRelative path of Pi++ program (End with <ENTER>): ";getline(cin,fn);}
+    else if(argc==2)fn=argv[1];
+    else check_argc_gt_2(0);
+    rdfl(fn);
     mkcl();
     do_prog();
     return 0;
